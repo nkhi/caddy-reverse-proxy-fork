@@ -27,6 +27,33 @@
 	unhealthy_request_count 200
 }
 
+nikhi.ca {
+    # Reverse proxy to your backend
+    reverse_proxy https://analytics-internal-2c694386-4e75-4bfa-afef-b7bdbcb413d8.nikhi.ca
+
+    # Handle preflight requests
+    @preflight {
+        method OPTIONS
+    }
+    handle @preflight {
+        header Access-Control-Allow-Origin "https://www.nikhi.ca"
+        header Access-Control-Allow-Methods "GET, POST, PATCH, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, Time-Zone"
+        header Access-Control-Allow-Credentials "true"
+        header Access-Control-Max-Age "3600"
+        # Return no content status 204 for preflight requests
+        respond 204
+    }
+
+    # Handle normal requests
+    handle {
+        header Access-Control-Allow-Origin "https://www.nikhi.ca"
+        header Access-Control-Allow-Methods "GET, POST, PATCH, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, Time-Zone"
+        header Access-Control-Allow-Credentials "true"
+    }
+}
+
 # site block, listens on the $PORT environment variable, automatically assigned by railway
 :{$PORT} {
 	# access logs
